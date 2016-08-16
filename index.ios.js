@@ -9,14 +9,19 @@ import {
   AppRegistry,
   StyleSheet,
   Text,
-  View
+  View,
+  Image
 } from 'react-native';
 
 import StepsView from './components/StepsView';
 
 class walknewv extends Component {
   render() {
-    return <StepsView />;
+    return (
+      <View style={styles.container}>
+        <Image source={require('./assets/infinity.gif')} />
+      </View>
+    );
   }
 }
 
@@ -28,8 +33,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5FCFF',
   },
   welcome: {
-    fontSize: 20,
+    // fontSize: 20,
     textAlign: 'center',
+    width: 100,
+    height: 100,
     margin: 10,
   },
   instructions: {
