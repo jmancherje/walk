@@ -83,7 +83,7 @@ class walknewv extends Component {
       if (this._handleHKError(err, 'getDailyStepCountSamples')) {
         return;
       }
-      console.log('step history', res);
+
       this.setState({
         stepHistory: res,
         average: Math.floor(this._calculateAvgFromResponse(res))
