@@ -52,7 +52,8 @@ class walknewv extends Component {
 
   componentDidMount() {
     AppleHealthKit.isAvailable((err,available) => {
-      if(available){
+      if(false){
+      // if(available){
         AppleHealthKit.initHealthKit(HKOPTIONS, (err, res) => {
           if(this._handleHKError(err, 'initHealthKit')){
             return;
@@ -60,8 +61,25 @@ class walknewv extends Component {
           this._fetchStepsToday();
           this._fetchStepsHistory();
         });
+      } else {
+        // wait 1 second and set dummy data for use in sumulator
+        const weekOfData = [];
+        for (let i = 0; i < this.state.range; i++) {
+          weekOfData[i] = { value: this._calcRandomStepCount() };
+        }
+        setTimeout(() => {
+          this.setState({
+            stepsToday: this._calcRandomStepCount(),
+            stepHistory: weekOfData,
+            average: Math.floor(this._calculateAvgFromResponse(weekOfData))
+          });
+        }, 1000);
       }
     });
+  }
+
+  _calcRandomStepCount() {
+    return Math.floor(Math.random() * (11000 - 5000 + 1)) + 5000;
   }
 
   _fetchStepsToday() {
@@ -75,7 +93,7 @@ class walknewv extends Component {
 
   _fetchStepsHistory() {
     const currentDate = new Date();
-    currentDate.setDate(currentDate.getDate() - this.state.range);
+    currentDate.setDate(currentDate.getDate() - (this.state.range + 1));
     let options = {
       startDate: currentDate.toISOString(),
     };
@@ -92,9 +110,10 @@ class walknewv extends Component {
   }
 
   _calculateAvgFromResponse(response) {
-     return response.reduce((sum, day) => {
+     const sumOfAllDays = response.reduce((sum, day) => {
        return sum + day.value;
-     }, 0) / this.state.range;
+     }, 0) - this.state.stepsToday;
+     return sumOfAllDays / this.state.range;
   }
 
   _handleHKError(err, method): boolean {
@@ -111,6 +130,7 @@ class walknewv extends Component {
     return (
       <View style={ styles.container } >
         <Image source={ require('./assets/infinity.gif') }/>
+        <Text>{ Math.random().toString(36).substring(2, 10) }</Text>
         <Text>Steps Today:</Text>
         <Text>{ this.state.stepsToday || 'loading...' }</Text>
         <Text>Average over {this.state.range} days:</Text>
