@@ -10,11 +10,17 @@ import {
   TouchableHighlight
 } from 'react-native';
 
+import Dimensions from 'Dimensions';
+
+const { height, width } = Dimensions.get('window');
+
 import AppleHealthKit from 'react-native-apple-healthkit';
 
 import CreateTeam from '../createTeam/CreateTeam';
 import JoinTeam from '../joinTeam/JoinTeam';
 import ViewTeam from '../viewTeam/ViewTeam';
+import DopeButton from '../dopeButton/DopeButton';
+console.log(DopeButton);
 
 // HealthKit initialization options
 const HKPERMS = AppleHealthKit.Constants.Permissions;
@@ -49,8 +55,8 @@ export default class StepDataUser extends Component {
 
   componentDidMount() {
     AppleHealthKit.isAvailable((err,available) => {
-      if(false){
-      // if(available){
+      // if(false){
+      if(available){
         AppleHealthKit.initHealthKit(HKOPTIONS, (err, res) => {
           if(this._handleHKError(err, 'initHealthKit')){
             return;
@@ -84,7 +90,7 @@ export default class StepDataUser extends Component {
       if (this._handleHKError(err, 'getStepCount')) {
         return;
       }
-      this.setState({ stepsToday: res.value });
+      this.setState({ stepsToday: Math.floor(res.value) });
     });
   }
 
@@ -149,57 +155,36 @@ export default class StepDataUser extends Component {
         <Image source={ require('../../assets/infinity.gif') }/>
         <Text>Steps Today:</Text>
         <Text>{ this.state.stepsToday || 'loading...' }</Text>
-        <Text>Average over {this.state.range} days:</Text>
+        <Text>Average over { this.state.range } days:</Text>
         <Text>{ this.state.average || 'loading...' }</Text>
-        <TouchableHighlight onPress={() => this._handleNavigation(createTeamRoute)}>
-          <Text style={ [styles.navigationButton, styles.sweetBlue] }>
-            Create Team
-          </Text>
-        </TouchableHighlight>
-        <TouchableHighlight onPress={() => this._handleNavigation(joinTeamRoute)}>
-          <Text style={ [styles.navigationButton, styles.darkGreen] }>
-            Join Team
-          </Text>
-        </TouchableHighlight>
-        <TouchableHighlight onPress={() => this._handleNavigation(viewTeamRoute)}>
-          <Text style={ [styles.navigationButton, styles.someKindaRed] }>
-            View Team
-          </Text>
-        </TouchableHighlight>
+        <DopeButton
+          text="Create Team"
+          textColor="#f75e5e"
+          pressedTextColor="#fff"
+          color="#313131"
+          pressedColor="#313131"
+          onPress={ () => this._handleNavigation(createTeamRoute) }
+        />
+        <DopeButton
+          text="Join Team"
+          color="#32d821b0"
+          textColor="#000000b0"
+          onPress={ () => this._handleNavigation(joinTeamRoute) }
+        />
+        <DopeButton
+          text="View Team"
+          pressedColor="#000"
+          pressedTextColor="#fff"
+          onPress={ () => this._handleNavigation(viewTeamRoute) }
+        />
+        <DopeButton
+          text="Update Steps"
+          onPress={ () => this._fetchStepsToday() }
+        />
       </View>
     );
   }
 }
-
-// function CreateTeam(props) {
-//   return (
-//     <View style={ styles.container }>
-//       <Text>Create a Team</Text>
-//       <Text>Random Code:</Text>
-//       <Text>{ Math.random().toString(36).substring(2, 10) }</Text>
-//     </View>
-//   );
-// }
-
-// function JoinTeam(props) {
-//   return (
-//     <View style={ styles.container }>
-//       <Text>Join a Team</Text>
-//       <Text>Enter a team code:</Text>
-//     </View>
-//   );
-// }
-
-// function ViewTeam(props) {
-//   return (
-//     <View style={ styles.container }>
-//       <Text>View your Team</Text>
-//       <Text>Team members: 2</Text>
-//       <Text>Justin: 5232</Text>
-//       <Text>Anthony: 5523</Text>
-//     </View>
-//   );
-// }
 
 const styles = StyleSheet.create({
   container: {
@@ -215,24 +200,7 @@ const styles = StyleSheet.create({
     height: 100,
     margin: 10,
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-  navigationButton: {
-    alignSelf: 'center',
-    marginTop: 10,
-    fontWeight: 'bold',
-    fontSize: 25,
-  },
-  sweetBlue: {
-    color: '#3e2ce2',
-  },
-  darkGreen: {
-    color: '#1cca2d',
-  },
-  someKindaRed: {
-    color: '#e34635',
+  darkGreyFont: {
+    color: '#242f33'
   },
 });
