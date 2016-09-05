@@ -7,7 +7,8 @@ import {
   View,
   Image,
   NavigatorIOS,
-  TouchableHighlight
+  TouchableHighlight,
+  AlertIOS
 } from 'react-native';
 
 import Dimensions from 'Dimensions';
@@ -20,7 +21,6 @@ import CreateTeam from '../createTeam/CreateTeam';
 import JoinTeam from '../joinTeam/JoinTeam';
 import ViewTeam from '../viewTeam/ViewTeam';
 import DopeButton from '../dopeButton/DopeButton';
-console.log(DopeButton);
 
 // HealthKit initialization options
 const HKPERMS = AppleHealthKit.Constants.Permissions;
@@ -55,8 +55,8 @@ export default class StepDataUser extends Component {
 
   componentDidMount() {
     AppleHealthKit.isAvailable((err,available) => {
-      // if(false){
-      if(available){
+      if(false){
+      // if(available){
         AppleHealthKit.initHealthKit(HKOPTIONS, (err, res) => {
           if(this._handleHKError(err, 'initHealthKit')){
             return;
@@ -129,6 +129,19 @@ export default class StepDataUser extends Component {
     return false;
   }
 
+  _fetchData() {
+    const queryUrl = 'https://wok-this-way.herokuapp.com/api/groups/data';
+    // const queryUrl = 'https://wok-this-way.herokuapp.com/api/groups/';
+
+    fetch(queryUrl, { query: { groupId: 1 }})
+      .then(response => response.json())
+      .then(responseData => {
+        console.log('responseData', responseData)
+        AlertIOS.alert('Response!', responseData.instructions);
+      })
+      .catch(error => console.log('error', error));
+  }
+
   _handleNavigation = (nextRoute) => {
     this.props.navigator.push(nextRoute);
   };
@@ -180,6 +193,10 @@ export default class StepDataUser extends Component {
         <DopeButton
           text="Update Steps"
           onPress={ () => this._fetchStepsToday() }
+        />
+        <DopeButton
+          text="Hit API"
+          onPress={ () => this._fetchData() }
         />
       </View>
     );
